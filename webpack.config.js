@@ -129,12 +129,18 @@ module.exports = {
     }),
     new webpack.ProvidePlugin({
       process: 'process/browser',
-  }),
+    }),
   ],
   devServer: {
     // HTTPS is required for SharedArrayBuffer to work.
     server: 'https',
-    allowedHosts: ['github.com'],
+    allowedHosts: 'all',
+    proxy: [{
+      context: ['/lettell'],
+      target: 'https://github.com',
+      changeOrigin: true,
+      secure: true,
+    }],
     headers: {
       // "Access-Control-Allow-Origin": "*",
       // "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",

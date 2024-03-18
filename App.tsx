@@ -1,7 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Pressable, Text } from 'react-native';
+import git from 'isomorphic-git';
+global.Buffer = global.Buffer || require('buffer').Buffer
+
+
 import { FsaNodeFs, FsaNodeSyncAdapterWorker } from 'memfs/lib/fsa-to-node';
-// import http from 'isomorphic-git/http/web'
+import { fs } from 'memfs';
+import http from 'isomorphic-git/http/web'
 import './styles.scss';
 
 const App = () => {
@@ -10,20 +15,47 @@ const App = () => {
   const [data, setData] = useState<any>({});
   const [_orignalDefault, setOrignalDefault] = useState<any>({});
   const filteredRoots = useMemo(() => roots.filter((e: any) => e !== defaultFolder), [roots])
-  const fsRef = useRef<FsaNodeFs>();
+  console.log('roots', roots)
+  const fsRef = useRef<FsaNodeFs>(fs as any);
   const initFsa = async () => {
     const dir = await (window as any).showDirectoryPicker({ id: 'demo', mode: 'readwrite' });
     const adapter = await FsaNodeSyncAdapterWorker.start('https://localhost:9876/worker.bundle.js', dir);
     fsRef.current = new FsaNodeFs(dir, adapter);
     initGitTranslations();
   }
+  useEffect(() => {
+    pullTranslations();
+  }, [])
+  // method to pull translations from git git@github.com:lettell/demo.git
+  const pullTranslations = async () => {
+    // const dir = await (window as any).showDirectoryPicker({ id: 'demo', mode: 'readwrite' });
+    // const adapter = await FsaNodeSyncAdapterWorker.start('https://localhost:9876/worker.bundle.js', dir);
+    try {
+      await git.clone({
+        fs,
+        http,
+        dir: '',
+        url: 'https://localhost:9876/lettell/demo.git',
+        ref: 'main',
+        singleBranch: true,
+        depth: 10
+      });
 
+    } catch (e) {
+      console.log(e)
+    } finally {
+      initGitTranslations();
+      const languages = fs.readdirSync('', { withFileTypes: true }) as Array<any>;
+      setRoots(languages?.filter((e: any) => !e.name.startsWith('.') && e.isDirectory()).map(e => e.name) as Array<any>)
+    }
+  }
   useEffect(() => {
     initApp();
+
   }, [roots]);
 
   const initGitTranslations = async () => {
-    const languages = await fsRef.current?.readdirSync('', { withFileTypes: true }) as Array<any>;
+    const languages = fsRef.current?.readdirSync('', { withFileTypes: true }) as Array<any>;
     setRoots(languages?.filter((e: any) => e.isDirectory()).map(e => e.name) as Array<any>)
   }
   //flattened json object keys retunr flattened key and value
@@ -46,6 +78,7 @@ const App = () => {
     for (const file of defaultFiles) {
       if (file.isFile() && file.name.endsWith('.json')) {
         const defaulContent = await fsRef.current?.readFileSync(`${defaultFolder}/${file.name}`, 'utf-8');
+        console.log(filteredRoots);
         const otherContent = await Promise.all(filteredRoots.map(async (root: string) => {
           const existFile = await fsRef.current?.existsSync(`${root}/${file.name}`);
           if (!existFile) {
@@ -106,7 +139,24 @@ const App = () => {
         await fsRef.current?.promises.writeFile(`${locale}/${file}`, JSON.stringify(json), { encoding: 'utf-8' });
       }
     }
+    git.add({ fs, dir: '', filepath: '.' });
+   let sha = await git.commit({
+      fs,
+      dir: '',
+      author: { name: 'Paulius Jarosius', email: 'jarosius@gmail.com' },
+      message: 'Nice commit message',
+    });
+    let pushResult = await git.push({
+      fs,
+      http,
+      dir: '',
+      remote: 'origin',
+      ref: 'main',
+      onAuth: () => ({ username: process.env.GITHUB_TOKEN }),
+    })
+    console.log(pushResult, sha)
   }
+  console.log(data)
   return (
     // <SafeAreaView>
     // <StatusBar />
@@ -118,7 +168,7 @@ const App = () => {
         <Text style={{ fontSize: 24 }}>SAVE TRNASLATIONS</Text>
       </Pressable>
       {/* <th><Text>{Object.entries(_orignalDefault).map(e => JSON.stringify(e))}</th> */}
-      {Object.keys(data).map(e => <th>{e}</th>)}
+      {/* {Object.keys(data).map(e => <th>{e}</th>)} */}
 
 
       {/* FOLDERS */}
