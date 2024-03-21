@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, Text } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import git from 'isomorphic-git';
 global.Buffer = global.Buffer || require('buffer').Buffer
 
@@ -7,7 +7,8 @@ global.Buffer = global.Buffer || require('buffer').Buffer
 import { FsaNodeFs, FsaNodeSyncAdapterWorker } from 'memfs/lib/fsa-to-node';
 import { fs } from 'memfs';
 import http from 'isomorphic-git/http/web'
-import './styles.scss';
+// import './styles.scss';
+import InputAutoGrow from './src/ui/inputs/InputAutoGrow';
 
 const App = () => {
   const [defaultFolder, _] = useState<string>('lt')
@@ -15,7 +16,6 @@ const App = () => {
   const [data, setData] = useState<any>({});
   const [_orignalDefault, setOrignalDefault] = useState<any>({});
   const filteredRoots = useMemo(() => roots.filter((e: any) => e !== defaultFolder), [roots])
-  console.log('roots', roots)
   const fsRef = useRef<FsaNodeFs>(fs as any);
   const initFsa = async () => {
     const dir = await (window as any).showDirectoryPicker({ id: 'demo', mode: 'readwrite' });
@@ -35,7 +35,7 @@ const App = () => {
         fs,
         http,
         dir: '',
-        url: 'https://localhost:9876/lettell/demo.git',
+        url: 'https://github.com/lettell/demo.git',
         ref: 'main',
         singleBranch: true,
         depth: 10
@@ -140,7 +140,7 @@ const App = () => {
       }
     }
     git.add({ fs, dir: '', filepath: '.' });
-   let sha = await git.commit({
+    let sha = await git.commit({
       fs,
       dir: '',
       author: { name: 'Paulius Jarosius', email: 'jarosius@gmail.com' },
@@ -160,7 +160,7 @@ const App = () => {
   return (
     // <SafeAreaView>
     // <StatusBar />
-    <div>
+    <View>
       <Pressable onPress={initFsa}>
         <Text style={{ fontSize: 24 }}>LOAD TRANSLATIONS</Text>
       </Pressable>
@@ -178,50 +178,51 @@ const App = () => {
 
       {
         Object.keys(data).map(key => {
-          return <table>
-            <tr>
-              <th>KEY</th>
-              {Object.keys(data).map(key => Object.keys(data[key]).map(locale => <th>{locale}</th>))}
-            </tr>
+          return <View>
+            <View>
+              <Text>KEY</Text>
+              {Object.keys(data).map(key => Object.keys(data[key]).map(locale => <View><Text>{locale}</Text></View>))}
+            </View>
             {Object.entries(data[key][defaultFolder]).map((e: any, i: any) => {
-              return <tr>
+              return <View>
                 {/* KEY */}
-                <td>
+                <View>
                   <Text key={i}>{e[0]}</Text>
-
-                </td>
+                </View>
                 {/* 
                 {/* DEFAULT VALUE */}
-                <td>
-                  <label key={i} className="input-sizer stacked" data-value={e[1]} >
+                <View>
+                  <InputAutoGrow setText={(translatedValue) => handleInputChange(key, defaultFolder, e[0], translatedValue)} text={e[1]} />
+                  {/* <label key={i} className="input-sizer stacked" data-value={e[1]} >
                     <textarea rows={1} onChange={(event) => {
                       const a: any = event.target.parentNode
                       a.dataset.value = event.target.value
                       handleInputChange(key, defaultFolder, e[0], event.target.value)
                     }} value={e[1]} />
-                  </label>
+                  </label> */}
                   {/* <TextInput multiline={true} onChangeText={(translatedValue) => handleInputChange(key, defaultFolder, e[0], translatedValue)} value={e[1} /> */}
-                </td>
+                </View>
                 {/* TRANSLATIONS */}
                 {filteredRoots.map((root: string, i: any) => {
-                  return <label className="input-sizer stacked" data-value={data[key][root][e[0]]} >
-                    <textarea rows={1} onChange={(event) => {
-                      const a: any = event.target.parentNode
-                      a.dataset.value = event.target.value
-                      handleInputChange(key, root, e[0], event.target.value)
-                    }} value={data[key][root][e[0]] || 'EMPTY!!'} key={i} />
-                  </label>
+                  return <View key={i}><InputAutoGrow setText={(translatedValue) => handleInputChange(key, root, e[0], translatedValue)} text={data[key][root][e[0]]} /></View>
+                  // return <label className="input-sizer stacked" data-value={data[key][root][e[0]]} >
+                  //   <textarea rows={1} onChange={(event) => {
+                  //     const a: any = event.target.parentNode
+                  //     a.dataset.value = event.target.value
+                  //     handleInputChange(key, root, e[0], event.target.value)
+                  //   }} value={data[key][root][e[0]] || 'EMPTY!!'} key={i} />
+                  // </label>
                 })}
-              </tr>
+              </View>
             }
 
             )}
 
-          </table>
+          </View>
         })
       }
 
-    </div >
+    </View>
     // </SafeAreaView>
 
   );
