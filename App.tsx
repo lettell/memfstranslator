@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import git from 'isomorphic-git';
 global.Buffer = global.Buffer || require('buffer').Buffer
 
@@ -179,12 +179,12 @@ const App = () => {
       {
         Object.keys(data).map(key => {
           return <View>
-            <View>
+            <View style={{ flexDirection: 'row' }}>
               <Text>KEY</Text>
               {Object.keys(data).map(key => Object.keys(data[key]).map(locale => <View><Text>{locale}</Text></View>))}
             </View>
             {Object.entries(data[key][defaultFolder]).map((e: any, i: any) => {
-              return <View>
+              return <ScrollView horizontal={true} contentContainerStyle={{ flexDirection: 'row' }}>
                 {/* KEY */}
                 <View>
                   <Text key={i}>{e[0]}</Text>
@@ -213,7 +213,7 @@ const App = () => {
                   //   }} value={data[key][root][e[0]] || 'EMPTY!!'} key={i} />
                   // </label>
                 })}
-              </View>
+              </ScrollView>
             }
 
             )}
