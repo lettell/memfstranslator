@@ -9,8 +9,11 @@ import { fs } from 'memfs';
 import http from 'isomorphic-git/http/web'
 // import './styles.scss';
 import InputAutoGrow from './src/ui/inputs/InputAutoGrow';
+import './src/translations/i18n';
+import { useTranslation } from 'react-i18next';
 
 const App = () => {
+  const { t } = useTranslation();
   const [defaultFolder, _] = useState<string>('lt')
   const [roots, setRoots] = useState<any>([])
   const [data, setData] = useState<any>({});
@@ -161,6 +164,7 @@ const App = () => {
     // <SafeAreaView>
     // <StatusBar />
     <View>
+      <Text>{t('common.demo')}</Text>
       <Pressable onPress={initFsa}>
         <Text style={{ fontSize: 24 }}>LOAD TRANSLATIONS</Text>
       </Pressable>
