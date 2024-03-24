@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 
 const App = () => {
   const { t } = useTranslation();
+  return (<Text>OK</Text>)
   const [defaultFolder, _] = useState<string>('lt')
   const [roots, setRoots] = useState<any>([])
   const [data, setData] = useState<any>({});
@@ -164,7 +165,7 @@ const App = () => {
     // <SafeAreaView>
     // <StatusBar />
     <View>
-      <Text>{t('common.demo')}</Text>
+      <Text testID="App name text button" accessibilityLabel="App name label" >{t('common.demo')}</Text>
       <Pressable onPress={initFsa}>
         <Text style={{ fontSize: 24 }}>LOAD TRANSLATIONS</Text>
       </Pressable>
@@ -226,7 +227,7 @@ const App = () => {
         })
       }
 
-    </View>
+    </View >
     // </SafeAreaView>
 
   );
