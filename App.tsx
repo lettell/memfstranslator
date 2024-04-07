@@ -11,11 +11,14 @@ import http from 'isomorphic-git/http/web'
 import InputAutoGrow from './src/ui/inputs/InputAutoGrow';
 import './src/translations/i18n';
 import { useTranslation } from 'react-i18next';
+import GitBasedTabs from './src/base/BaseTabs';
+import { FluentProvider, webLightTheme } from '@fluentui/react-components';
+import BaseTable from './src/base/BaseTable';
 
 const App = () => {
   const { t } = useTranslation();
-  return (<Text>OK</Text>)
   const [defaultFolder, _] = useState<string>('lt')
+  const [files, setFiles] = useState<any>([]);
   const [roots, setRoots] = useState<any>([])
   const [data, setData] = useState<any>({});
   const [_orignalDefault, setOrignalDefault] = useState<any>({});
@@ -39,7 +42,7 @@ const App = () => {
         fs,
         http,
         dir: '',
-        url: 'https://github.com/lettell/demo.git',
+        url: 'https://localhost:9876/lettell/demo.git',
         ref: 'main',
         singleBranch: true,
         depth: 10
@@ -54,12 +57,16 @@ const App = () => {
     }
   }
   useEffect(() => {
-    initApp();
+    if (roots.length > 0) {
+      initApp();
+
+    }
 
   }, [roots]);
 
   const initGitTranslations = async () => {
     const languages = fsRef.current?.readdirSync('', { withFileTypes: true }) as Array<any>;
+    console.log(languages)
     setRoots(languages?.filter((e: any) => e.isDirectory()).map(e => e.name) as Array<any>)
   }
   //flattened json object keys retunr flattened key and value
@@ -79,6 +86,7 @@ const App = () => {
     const dataParsed: any = {};
     const orignalDefaultParsed: any = {};
     const defaultFiles = await fsRef.current?.readdirSync(defaultFolder, { withFileTypes: true }) as Array<any>;
+
     for (const file of defaultFiles) {
       if (file.isFile() && file.name.endsWith('.json')) {
         const defaulContent = await fsRef.current?.readFileSync(`${defaultFolder}/${file.name}`, 'utf-8');
@@ -115,6 +123,7 @@ const App = () => {
       }
     }
     setData(dataParsed);
+    setFiles(Object.keys(dataParsed));
     setOrignalDefault(orignalDefaultParsed);
   }
   const handleInputChange = (file: any, locale: any, key: any, translatedValue: any) => {
@@ -161,10 +170,18 @@ const App = () => {
     console.log(pushResult, sha)
   }
   console.log(data)
+
+  const onValueCuange = (key: any, locale: any, value: any, file: any) => {
+    data[file][locale][key] = value;
+    setData({ ...data });
+  }
+
   return (
     // <SafeAreaView>
     // <StatusBar />
-    <View>
+    <FluentProvider theme={webLightTheme}>
+
+      <GitBasedTabs tabs={files} />
       <Text testID="App name text button" accessibilityLabel="App name label" >{t('common.demo')}</Text>
       <Pressable onPress={initFsa}>
         <Text style={{ fontSize: 24 }}>LOAD TRANSLATIONS</Text>
@@ -182,52 +199,62 @@ const App = () => {
       {/* FLATTENED VALUES */}
 
       {
+        // TODO: move to separate component
+        // [key, object, object]
         Object.keys(data).map(key => {
-          return <View>
-            <View style={{ flexDirection: 'row' }}>
-              <Text>KEY</Text>
-              {Object.keys(data).map(key => Object.keys(data[key]).map(locale => <View><Text>{locale}</Text></View>))}
-            </View>
-            {Object.entries(data[key][defaultFolder]).map((e: any, i: any) => {
-              return <ScrollView horizontal={true} contentContainerStyle={{ flexDirection: 'row' }}>
-                {/* KEY */}
-                <View>
-                  <Text key={i}>{e[0]}</Text>
-                </View>
-                {/* 
-                {/* DEFAULT VALUE */}
-                <View>
-                  <InputAutoGrow setText={(translatedValue) => handleInputChange(key, defaultFolder, e[0], translatedValue)} text={e[1]} />
-                  {/* <label key={i} className="input-sizer stacked" data-value={e[1]} >
-                    <textarea rows={1} onChange={(event) => {
-                      const a: any = event.target.parentNode
-                      a.dataset.value = event.target.value
-                      handleInputChange(key, defaultFolder, e[0], event.target.value)
-                    }} value={e[1]} />
-                  </label> */}
-                  {/* <TextInput multiline={true} onChangeText={(translatedValue) => handleInputChange(key, defaultFolder, e[0], translatedValue)} value={e[1} /> */}
-                </View>
-                {/* TRANSLATIONS */}
-                {filteredRoots.map((root: string, i: any) => {
-                  return <View key={i}><InputAutoGrow setText={(translatedValue) => handleInputChange(key, root, e[0], translatedValue)} text={data[key][root][e[0]]} /></View>
-                  // return <label className="input-sizer stacked" data-value={data[key][root][e[0]]} >
-                  //   <textarea rows={1} onChange={(event) => {
-                  //     const a: any = event.target.parentNode
-                  //     a.dataset.value = event.target.value
-                  //     handleInputChange(key, root, e[0], event.target.value)
-                  //   }} value={data[key][root][e[0]] || 'EMPTY!!'} key={i} />
-                  // </label>
-                })}
-              </ScrollView>
-            }
 
-            )}
-
-          </View>
+          return <BaseTable onValueChange={(...arg) => onValueCuange(...arg, key)} columns={[{ columnKey: 'key', label: 'KEY', columnType: 'System' }, ...roots.map((root: string) => ({ columnKey: root, label: root, columnType: 'AdvanedField' }))]} items={Object.entries(data[key][defaultFolder]).map((e: any, i: any) => {
+            return [e[0], ...roots.map((root: string) => ({ [root]: data[key][root][e[0]] }))]
+          })} loader={false} />
         })
+
+
+        //   Object.keys(data).map(key => {
+        //   return <View>
+        //     <View style={{ flexDirection: 'row' }}>
+        //       <Text>KEY</Text>
+        //       {Object.keys(data).map(key => Object.keys(data[key]).map(locale => <View><Text>{locale}</Text></View>))}
+        //     </View>
+        //     {Object.entries(data[key][defaultFolder]).map((e: any, i: any) => {
+        //       return <ScrollView horizontal={true} contentContainerStyle={{ flexDirection: 'row' }}>
+        //         {/* KEY */}
+        //         <View>
+        //           <Text key={i}>{e[0]}</Text>
+        //         </View>
+        //         {/* 
+        //         {/* DEFAULT VALUE */}
+        //         <View>
+        //           <InputAutoGrow setText={(translatedValue) => handleInputChange(key, defaultFolder, e[0], translatedValue)} text={e[1]} />
+        //           {/* <label key={i} className="input-sizer stacked" data-value={e[1]} >
+        //             <textarea rows={1} onChange={(event) => {
+        //               const a: any = event.target.parentNode
+        //               a.dataset.value = event.target.value
+        //               handleInputChange(key, defaultFolder, e[0], event.target.value)
+        //             }} value={e[1]} />
+        //           </label> */}
+        //           {/* <TextInput multiline={true} onChangeText={(translatedValue) => handleInputChange(key, defaultFolder, e[0], translatedValue)} value={e[1} /> */}
+        //         </View>
+        //         {/* TRANSLATIONS */}
+        //         {filteredRoots.map((root: string, i: any) => {
+        //           return <View key={i}><InputAutoGrow setText={(translatedValue) => handleInputChange(key, root, e[0], translatedValue)} text={data[key][root][e[0]]} /></View>
+        //           // return <label className="input-sizer stacked" data-value={data[key][root][e[0]]} >
+        //           //   <textarea rows={1} onChange={(event) => {
+        //           //     const a: any = event.target.parentNode
+        //           //     a.dataset.value = event.target.value
+        //           //     handleInputChange(key, root, e[0], event.target.value)
+        //           //   }} value={data[key][root][e[0]] || 'EMPTY!!'} key={i} />
+        //           // </label>
+        //         })}
+        //       </ScrollView>
+        //     }
+
+        //     )}
+
+        //   </View>
+        // })
       }
 
-    </View >
+    </FluentProvider>
     // </SafeAreaView>
 
   );

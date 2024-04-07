@@ -1,7 +1,8 @@
 import { StyleSheet, TextInput, Text, LayoutChangeEvent, View } from 'react-native';
 import React, { useEffect, useState, useTransition } from 'react';
 
-const InputAutoGrow = ({ text, setText }: { text: string, setText: (text: string) => void }) => {
+const InputAutoGrow = ({ text, setText }: { text: any, setText?: (text: string) => void }) => {
+    const inputRef = React.useRef<TextInput>(null);
     const [inputHeight, setInputHeight] = useState(0);
     const [inputWidth, setInputWidth] = useState(0);
     const [_, startTransition] = useTransition();
@@ -11,7 +12,7 @@ const InputAutoGrow = ({ text, setText }: { text: string, setText: (text: string
     };
 
     useEffect(() => {
-        if (virtualText !== text) {
+        if (virtualText !== text && setText) {
             setText(virtualText);
         }
     }, [virtualText])
@@ -24,18 +25,25 @@ const InputAutoGrow = ({ text, setText }: { text: string, setText: (text: string
         });
 
     };
-
+    // return <label className="input-sizer stacked" data-value={data[key][root][e[0]]} >
+        //           //   <textarea rows={1} onChange={(event) => {
+        //           //     const a: any = event.target.parentNode
+        //           //     a.dataset.value = event.target.value
+        //           //     handleInputChange(key, root, e[0], event.target.value)
+        //           //   }} value={data[key][root][e[0]] || 'EMPTY!!'} key={i} />
+        //           // </label>
     return (
         <View style={{ position: 'relative' }}>
-                    <View onLayout={onLayout} style={{alignSelf: 'flex-start', backgroundColor: 'blue'}}>
-                <Text style={[styles.input, {margin:0, marginRight: 13}]}>
+            <View onLayout={onLayout} style={{ alignSelf: 'flex-start', backgroundColor: 'blue' }}>
+                <Text style={[styles.input, { margin: 0, marginRight: 13 }]}>
                     {virtualText}
                 </Text>
             </View>
 
             <TextInput
-                style={[styles.input, { zIndex: 10, height: inputHeight, width: inputWidth }]}
+                style={[styles.input, { top: 0, left: 0, margin: 0, position: 'absolute', zIndex: 10, height: inputHeight, width: inputWidth }]}
                 multiline
+                ref={inputRef}
                 scrollEnabled={true}
                 value={text}
                 onChangeText={handleTextChange}
@@ -44,7 +52,7 @@ const InputAutoGrow = ({ text, setText }: { text: string, setText: (text: string
                 autoCapitalize="none"
                 autoCorrect={false}
             />
-    
+
             {/* */}
 
 

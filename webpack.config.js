@@ -63,6 +63,7 @@ const tsLoaderConfiguration = {
 };
 
 module.exports = {
+  mode: "development",
   entry: {
     app: path.join(__dirname, "index.web.js"),
     worker: path.join(__dirname, "worker.js"),
