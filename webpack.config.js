@@ -1,5 +1,6 @@
 const path = require("path");
 const fs = require("fs");
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
@@ -80,6 +81,11 @@ module.exports = {
       "react-native$": "react-native-web",
       process: "process/browser",
     },
+    plugins: [
+      new TsconfigPathsPlugin({
+        /*configFile: "./path/to/tsconfig.json" */
+      }),
+    ],
     fallback: {
       assert: require.resolve('assert'),
       buffer: require.resolve('buffer'),
@@ -115,6 +121,10 @@ module.exports = {
         resolve: {
           fullySpecified: false
         },
+      },
+      {
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        type: 'asset/resource',
       },
 
     ],

@@ -25,13 +25,13 @@ const InputAutoGrow = ({ text, setText }: { text: any, setText?: (text: string) 
         });
 
     };
-    // return <label className="input-sizer stacked" data-value={data[key][root][e[0]]} >
-        //           //   <textarea rows={1} onChange={(event) => {
-        //           //     const a: any = event.target.parentNode
-        //           //     a.dataset.value = event.target.value
-        //           //     handleInputChange(key, root, e[0], event.target.value)
-        //           //   }} value={data[key][root][e[0]] || 'EMPTY!!'} key={i} />
-        //           // </label>
+    return <label className="input-sizer stacked" data-value={text} >
+        <textarea rows={1} onChange={(event) => {
+            const a: any = event.target.parentNode
+            a.dataset.value = event.target.value
+            handleTextChange(event.target.value)
+        }} value={text} />
+    </label>
     return (
         <View style={{ position: 'relative' }}>
             <View onLayout={onLayout} style={{ alignSelf: 'flex-start', backgroundColor: 'blue' }}>

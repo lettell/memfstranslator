@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View, Text, Image } from 'react-native'
 import React from 'react'
 
 import {
@@ -8,13 +8,11 @@ import {
     Table,
     TableHeader,
     TableHeaderCell,
-    TableCellLayout,
-    PresenceBadgeStatus,
-    Avatar,
 } from "@fluentui/react-components";
 import InputAutoGrow from '../ui/inputs/InputAutoGrow';
 
 const CollumnTypes = ['System', 'AdvanedField'];
+// TODO: cell wtih image
 const renderCell = (object: any): string => {
     const entry = Object.values(object || {})
     console.log(entry[0])
@@ -25,7 +23,7 @@ const BaseTable = ({ columns = [], items = [], loader, onValueChange, }: {
     columns: Array<{ columnKey: string; label: string; columnType: any; }>, items: any, loader: boolean
 }) => {
     return (
-        <Table arial-label="Default table">
+        <Table arial-label="Default table" role="grid" style={{ width: 'max-content' }} sortable>
             <TableHeader>
                 <TableRow>
                     {columns.map((column) => (
@@ -42,8 +40,11 @@ const BaseTable = ({ columns = [], items = [], loader, onValueChange, }: {
                             <TableCell key={item}>
                                 {column.columnType === 'System' && (
                                     // todo more dynamic
-                                    <Text>{item[index]}</Text>
-                                )}
+                                    <View key={column.columnKey}>
+                                        <img className='image-sizer' src={'./assets/demoPhone.png'} />
+                                        <Text > {item[index]}</Text>
+                                    </View>)
+                                }
                                 {column.columnType === 'AdvanedField' && (
                                     <View>
                                         <InputAutoGrow setText={text => onValueChange(item[0], Object.keys(item[index])[0], text)} text={Object.values(item[index])[0]} />
@@ -55,7 +56,7 @@ const BaseTable = ({ columns = [], items = [], loader, onValueChange, }: {
                     </TableRow>
                 ))}
             </TableBody>
-        </Table>
+        </Table >
     )
 }
 

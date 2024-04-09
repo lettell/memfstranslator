@@ -3,8 +3,34 @@
 *::after {
   box-sizing: border-box;
 }
+// nh-....
+// .image-sizer:hover {
+//   transform: scale(1.32);
+// }
 
+// sticky first
+table thead th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+}
+table thead {
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 1;
+}
+table tbody td:first-child {
+  position: sticky;
+  left: 0;
+  background: white;
+  z-index: 1;
+}
+
+// auto grow
 .input-sizer {
+  min-width: 'fit-content';
+  max-width: 480px; // fit by system now for apps
   display: inline-grid;
   vertical-align: top;
   align-items: center;

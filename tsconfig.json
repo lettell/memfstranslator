@@ -18,7 +18,11 @@
     "sourceMap": true,
     "strict": true,
     "strictFunctionTypes": false,
-    "target": "esnext"
+    "target": "esnext",
+    "paths": {
+      "tools/*": ["src/tools/*"],
+      "componentBase/*": ["src/base/*"],
+    }
   },
   "include": ["src/**/*", "**/*.d.ts", "**/*.ts"]
 }
