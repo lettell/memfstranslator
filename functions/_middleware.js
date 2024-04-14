@@ -41,27 +41,50 @@ export async function onRequest(context) {
         next, // used for middleware or to fetch assets
         data, // arbitrary space for passing data between middlewares
     } = context
-    const { pathname } = new URL(request.url)
 
-    if (pathname.startsWith('/lettell')) {
+    const url = new URL(request.url)
+
+    if (url.pathname.startsWith('/lettell')) {
+        let url_hostname = url.hostname;
+
         const githubUrl = 'https://github.com' + pathname
 
-        // Fetch from GitHub
-        let response = await fetch(githubUrl, request)
+        let method = request.method;
+        let request_headers = request.headers;
+        let new_request_headers = new Headers(request_headers);
 
-        // Add CORS headers
-        let newHeaders = new Headers(response.headers)
-        newHeaders.set('Access-Control-Allow-Origin', '*'); // Adjust for specific origins if needed
-        newHeaders.set('Access-Control-Allow-Methods', 'GET, HEAD, POST, OPTIONS');
-        newHeaders.set('Access-Control-Allow-Headers', '*'); // Adjust for specific allowed headers if needed    
-        newHeaders.set('Cross-Origin-Opener-Policy', 'same-origin')
-        newHeaders.set('Cross-Origin-Embedder-Policy', 'require-corp')
+        new_request_headers.set('Host', 'github.com');
+        new_request_headers.set('Referer', url.protocol + '//' + url_hostname);
 
-        return new Response(response.body, {
-            status: response.status,
-            statusText: response.statusText,
-            headers: newHeaders
+        let original_response = await fetch(githubUrl, {
+            method: method,
+            headers: new_request_headers
         })
+
+        let original_response_clone = original_response.clone();
+        let response_headers = original_response.headers;
+        let new_response_headers = new Headers(response_headers);
+        let status = original_response.status;
+
+        if (disable_cache) {
+            new_response_headers.set('Cache-Control', 'no-store');
+        }
+
+        new_response_headers.set('access-control-allow-origin', '*');
+        new_response_headers.set('access-control-allow-credentials', true);
+        new_response_headers.delete('content-security-policy');
+        new_response_headers.delete('content-security-policy-report-only');
+        new_response_headers.delete('clear-site-data');
+
+
+
+
+        return new Response(original_response_clone.body, {
+            status,
+            headers: new_response_headers
+        })
+    } else {
+        return await next()
+
     }
-    return await next()
 }
