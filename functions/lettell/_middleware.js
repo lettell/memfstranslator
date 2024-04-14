@@ -41,7 +41,6 @@ export async function onRequest(context) {
         next, // used for middleware or to fetch assets
         data, // arbitrary space for passing data between middlewares
     } = context
-    const res = await next()
     const { pathname } = new URL(request.url)
 
     if (pathname.startsWith('/lettell')) {
@@ -52,6 +51,9 @@ export async function onRequest(context) {
 
         // Add CORS headers
         let newHeaders = new Headers(response.headers)
+        newHeaders.set('Access-Control-Allow-Origin', '*'); // Adjust for specific origins if needed
+        newHeaders.set('Access-Control-Allow-Methods', 'GET, HEAD, POST, OPTIONS');
+        newHeaders.set('Access-Control-Allow-Headers', '*'); // Adjust for specific allowed headers if needed    
         newHeaders.set('Cross-Origin-Opener-Policy', 'same-origin')
         newHeaders.set('Cross-Origin-Embedder-Policy', 'require-corp')
 
@@ -61,6 +63,5 @@ export async function onRequest(context) {
             headers: newHeaders
         })
     }
-
-    return res
+    return await next()
 }
