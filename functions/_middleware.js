@@ -52,9 +52,8 @@ export async function onRequest(context) {
 
         // Add CORS headers
         let newHeaders = new Headers(response.headers)
-        newHeaders.set('Access-Control-Allow-Origin', '*')
-        newHeaders.set('Access-Control-Allow-Methods', 'GET, HEAD, POST, OPTIONS')
-        newHeaders.set('Access-Control-Allow-Headers', '*')
+        newHeaders.set('Cross-Origin-Opener-Policy', 'same-origin')
+        newHeaders.set('Cross-Origin-Embedder-Policy', 'require-corp')
 
         return new Response(response.body, {
             status: response.status,
