@@ -41,7 +41,7 @@ const TranslateScreen = () => {
                 fs,
                 http,
                 dir: '',
-                url: 'https://localhost:9876/lettell/demo.git',
+                url: 'https://github.com/lettell/demo.git',
                 ref: 'main',
                 singleBranch: true,
                 depth: 10

@@ -10,6 +10,7 @@
     "start": "react-native start",
     "test": "jest",
     "web": "webpack serve --mode=development --config webpack.config.js ",
+    "build:web": "webpack build --mode=production ",
     "wdio": "wdio run ./wdio.conf.js"
   },
   "resolutions": {
