@@ -11,6 +11,8 @@ import GitBasedTabs from 'base/BaseTabs';
 import BaseTable from 'base/BaseTable';
 // @ts-ignore  
 import TestingToolbar from 'tools/TestingToolbar';
+import useLunar from 'hooks/useLunar';
+import TranslateSearchBar from './components/TranslateSearchBar';
 
 
 const TranslateScreen = () => {
@@ -19,6 +21,7 @@ const TranslateScreen = () => {
     const [files, setFiles] = useState<any>([]);
     const [roots, setRoots] = useState<any>([])
     const [data, setData] = useState<any>({});
+    const idx = useLunar(data, roots)
     const [_orignalDefault, setOrignalDefault] = useState<any>({});
     const filteredRoots = useMemo(() => roots.filter((e: any) => e !== defaultFolder), [roots])
     const fsRef = useRef<FsaNodeFs>(fs as any);
@@ -173,11 +176,11 @@ const TranslateScreen = () => {
         data[file][locale][key] = value;
         setData({ ...data });
     }
-
     return (
         // <SafeAreaView>
         // <StatusBar />
         <>
+            <TranslateSearchBar idx={idx} />
             <GitBasedTabs tabs={files} />
             <TestingToolbar />
             <Text testID="App name text button" accessibilityLabel="App name label" >{t('common.demo')}</Text>

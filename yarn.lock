@@ -1987,6 +1987,19 @@
     "@griffel/react" "^1.5.14"
     "@swc/helpers" "^0.5.1"
 
+"@fluentui/react-search-preview@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@fluentui/react-search-preview/-/react-search-preview-0.2.0.tgz#3609a51e84d161a58eba0dfdde2666884fa4b030"
+  integrity sha512-yMZJvZcNifh092azMO3RIJAGBUmlMtlZWuUzoMr5i+oxYBnmzrg8gQSunm+Pb484LMeZndshaVGMJQI9uP0SFA==
+  dependencies:
+    "@fluentui/react-icons" "^2.0.224"
+    "@fluentui/react-input" "^9.4.70"
+    "@fluentui/react-jsx-runtime" "^9.0.35"
+    "@fluentui/react-theme" "^9.1.19"
+    "@fluentui/react-utilities" "^9.18.6"
+    "@griffel/react" "^1.5.14"
+    "@swc/helpers" "^0.5.1"
+
 "@fluentui/react-select@^9.1.70":
   version "9.1.70"
   resolved "https://registry.npmjs.org/@fluentui/react-select/-/react-select-9.1.70.tgz"
@@ -3529,6 +3542,11 @@
   version "4.17.0"
   resolved "https://registry.npmjs.org/@types/lodash/-/lodash-4.17.0.tgz"
   integrity sha512-t7dhREVv6dbNj0q17X12j7yDG4bD/DHYX7o5/DbDxobP0HnGPgpRz2Ej77aL7TZT3DSw13fqUTj8J4mMnqa7WA==
+
+"@types/lunr@^2.3.7":
+  version "2.3.7"
+  resolved "https://registry.yarnpkg.com/@types/lunr/-/lunr-2.3.7.tgz#378a98ecf7a9fafc42466f67f73173c34a6265a0"
+  integrity sha512-Tb/kUm38e8gmjahQzdCKhbdsvQ9/ppzHFfsJ0dMs3ckqQsRj+P5IkSAwFTBrBxdyr3E/LoMUUrZngjDYAjiE3A==
 
 "@types/method-override@0.0.35":
   version "0.0.35"
@@ -9050,6 +9068,11 @@ lru-cache@^7.14.1:
   version "7.18.3"
   resolved "https://registry.npmjs.org/lru-cache/-/lru-cache-7.18.3.tgz"
   integrity sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==
+
+lunr@^2.3.9:
+  version "2.3.9"
+  resolved "https://registry.yarnpkg.com/lunr/-/lunr-2.3.9.tgz#18b123142832337dd6e964df1a5a7707b25d35e1"
+  integrity sha512-zTU3DaZaF3Rt9rhN3uBMGQD3dD2/vFQqnvZCDv4dl5iOzq2IZQqTxu90r4E5J+nP70J3ilqVCrbho2eWaeW8Ow==
 
 magic-string@^0.30.5:
   version "0.30.8"
