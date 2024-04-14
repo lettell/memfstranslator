@@ -42,7 +42,7 @@ const TranslateScreen = () => {
                 fs,
                 http,
                 dir: '',
-                url: 'https://memfstranslator.pages.dev/lettell/demo.git',
+                url: 'https://tools.jarosius.lt/lettell/demo.git',
                 ref: 'main',
                 singleBranch: true,
                 depth: 10
