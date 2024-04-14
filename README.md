@@ -79,3 +79,5 @@ To learn more about React Native, take a look at the following resources:
 - [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
 
 <!-- npx allure serve allure-results -->
+<!-- PUSH to all and submodules -->
+git push --recurse-submodules=on-demand
