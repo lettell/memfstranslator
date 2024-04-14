@@ -33,6 +33,7 @@ const TranslateScreen = () => {
         pullTranslations();
     }, [])
     // method to pull translations from git git@github.com:lettell/demo.git
+    // TODO: env by build versions
     const pullTranslations = async () => {
         // const dir = await (window as any).showDirectoryPicker({ id: 'demo', mode: 'readwrite' });
         // const adapter = await FsaNodeSyncAdapterWorker.start('https://localhost:9876/worker.bundle.js', dir);
@@ -41,7 +42,7 @@ const TranslateScreen = () => {
                 fs,
                 http,
                 dir: '',
-                url: 'https://3fce4606.memfstranslator.pages.dev/lettell/demo.git',
+                url: 'https://memfstranslator.pages.dev/lettell/demo.git',
                 ref: 'main',
                 singleBranch: true,
                 depth: 10
