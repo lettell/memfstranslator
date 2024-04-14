@@ -80,4 +80,8 @@ To learn more about React Native, take a look at the following resources:
 
 <!-- npx allure serve allure-results -->
 <!-- PUSH to all and submodules -->
+
+<!-- update latest submodules changes -->
+git submodule update --recursive --remote
+
 git push --recurse-submodules=on-demand
