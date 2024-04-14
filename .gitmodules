@@ -1,0 +1,3 @@
+[submodule "src/translations/locales"]
+	path = src/translations/locales
+	url = https://github.com/lettell/demo
