@@ -1,5 +1,5 @@
 import { View, Text, Image } from 'react-native'
-import React from 'react'
+import React, { useMemo } from 'react'
 
 import {
     TableBody,
@@ -10,6 +10,8 @@ import {
     TableHeaderCell,
 } from "@fluentui/react-components";
 import InputAutoGrow from '../ui/inputs/InputAutoGrow';
+import { useRecoilValue } from 'recoil';
+import { selectedContextState } from 'features/auth/state';
 
 const CollumnTypes = ['System', 'AdvanedField'];
 // TODO: cell wtih image
@@ -18,11 +20,15 @@ const renderCell = (object: any): string => {
     console.log(entry[0])
     return 'No Data' as string;
 };
-const BaseTable = ({ columns = [], items = [], loader, onValueChange, }: {
+const BaseTable = ({ columns = [], items = [], currentContext, loader, onValueChange, }: {
     onValueChange: (key: any, locale: any, value: any) => void;
+    currentContext: any,
     columns: Array<{ columnKey: string; label: string; columnType: any; }>, items: any, loader: boolean
 }) => {
-    return (
+
+    const selectedContext = useRecoilValue(selectedContextState);
+    const isSelected = useMemo(() => selectedContext === currentContext, [selectedContext, currentContext])
+    return (isSelected ?
         <Table arial-label="Default table" role="grid" style={{ width: 'max-content' }} sortable>
             <TableHeader>
                 <TableRow>
@@ -56,7 +62,7 @@ const BaseTable = ({ columns = [], items = [], loader, onValueChange, }: {
                     </TableRow>
                 ))}
             </TableBody>
-        </Table >
+        </Table > : <></>
     )
 }
 

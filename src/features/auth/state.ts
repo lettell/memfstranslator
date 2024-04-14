@@ -5,7 +5,7 @@ const isAuthState = atom({
     key: '@authState',
     default: false,
 })
-const selectedContextState = atom({
+const selectedContextState = atom<any>({
     key: '@selectedContext',
     default: null,
 })

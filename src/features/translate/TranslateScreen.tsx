@@ -168,7 +168,6 @@ const TranslateScreen = () => {
         })
         console.log(pushResult, sha)
     }
-    console.log(data)
 
     const onValueCuange = (key: any, locale: any, value: any, file: any) => {
         data[file][locale][key] = value;
@@ -182,9 +181,10 @@ const TranslateScreen = () => {
             <GitBasedTabs tabs={files} />
             <TestingToolbar />
             <Text testID="App name text button" accessibilityLabel="App name label" >{t('common.demo')}</Text>
-            <Pressable onPress={initFsa}>
+            {/* <Pressable onPress={initFsa}>
+                This for local editing
                 <Text style={{ fontSize: 24 }}>LOAD TRANSLATIONS</Text>
-            </Pressable>
+            </Pressable> */}
             <Pressable onPress={handleSave}>
                 <Text style={{ fontSize: 24 }}>SAVE TRNASLATIONS</Text>
             </Pressable>
@@ -201,8 +201,7 @@ const TranslateScreen = () => {
                 // TODO: move to separate component
                 // [key, object, object]
                 Object.keys(data).map(key => {
-
-                    return <BaseTable onValueChange={(...arg) => onValueCuange(...arg, key)} columns={[{ columnKey: 'key', label: 'KEY', columnType: 'System' }, ...roots.map((root: string) => ({ columnKey: root, label: root, columnType: 'AdvanedField' }))]} items={Object.entries(data[key][defaultFolder]).map((e: any, i: any) => {
+                    return <BaseTable currentContext={key} onValueChange={(...arg) => onValueCuange(...arg, key)} columns={[{ columnKey: 'key', label: 'KEY', columnType: 'System' }, ...roots.map((root: string) => ({ columnKey: root, label: root, columnType: 'AdvanedField' }))]} items={Object.entries(data[key][defaultFolder]).map((e: any, i: any) => {
                         return [e[0], ...roots.map((root: string) => ({ [root]: data[key][root][e[0]] }))]
                     })} loader={false} />
                 })
