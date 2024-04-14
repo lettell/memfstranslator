@@ -41,7 +41,7 @@ const BaseTable = ({ columns = [], items = [], loader, onValueChange, }: {
                                 {column.columnType === 'System' && (
                                     // todo more dynamic
                                     <View key={column.columnKey}>
-                                        <img className='image-sizer' src={'./assets/demoPhone.png'} />
+                                        <img className='image-sizer' src={require('assets/demoPhone.png')} />
                                         <Text > {item[index]}</Text>
                                     </View>)
                                 }

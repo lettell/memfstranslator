@@ -41,14 +41,9 @@ const svgLoaderConfiguration = {
 };
 
 const imageLoaderConfiguration = {
-  test: /\.(gif|jpe?g|png|svg)$/,
-  use: {
-    loader: "url-loader",
-    options: {
-      name: "[name].[ext]",
-    },
-  },
-};
+  test: /\.(png|svg|jpg|jpeg|gif)$/i,
+  type: 'asset/resource',
+}
 
 const tsLoaderConfiguration = {
   test: /\.(ts)x?$/,
@@ -122,11 +117,6 @@ module.exports = {
           fullySpecified: false
         },
       },
-      {
-        test: /\.(png|svg|jpg|jpeg|gif)$/i,
-        type: 'asset/resource',
-      },
-
     ],
   },
   plugins: [

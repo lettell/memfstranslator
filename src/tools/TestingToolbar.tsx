@@ -16,10 +16,9 @@ const TestingToolbar: any = () => {
         }
     }, [lastLocale])
     return (
-        <View style={{display: 'none'}}>
+        <View style={{display: 'flex'}}>
             <div onClick={showKeys}>
                 <Text>TestingToolbar</Text>
-
             </div>
         </View>
     )
