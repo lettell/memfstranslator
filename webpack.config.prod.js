@@ -135,8 +135,8 @@ module.exports = {
     }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.DefinePlugin({
-      __DEV__: JSON.stringify(true),
-      __HOST__: JSON.stringify('https://localhost:9876'),
+      __DEV__: JSON.stringify(false),
+      __HOST__: JSON.stringify('https://tools.jarosius.lt'),
       "process.env.NODE_DEBUG": JSON.stringify(false),
     }),
     new webpack.ProvidePlugin({
@@ -148,9 +148,8 @@ module.exports = {
     server: 'https',
     allowedHosts: 'all',
     proxy: [{
-      context: ['/github'],
+      context: ['/lettell'],
       target: 'https://github.com',
-      pathRewrite: { '^/github': '' },
       changeOrigin: true,
       secure: true,
     }],

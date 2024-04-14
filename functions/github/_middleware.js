@@ -57,7 +57,7 @@ export async function onRequest(context) {
         // Best practice is to always use the original request to construct the new request
         // to clone all the attributes. Applying the URL also requires a constructor
         // since once a Request has been constructed, its URL is immutable.
-        const newRequest = new Request(url.toString(), request);
+        const newRequest = new Request(url.toString().replace('/github', ''), request);
         try {
             const response = await fetch(newRequest);
      

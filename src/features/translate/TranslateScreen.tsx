@@ -24,7 +24,7 @@ const TranslateScreen = () => {
     const fsRef = useRef<FsaNodeFs>(fs as any);
     const initFsa = async () => {
         const dir = await (window as any).showDirectoryPicker({ id: 'demo', mode: 'readwrite' });
-        const adapter = await FsaNodeSyncAdapterWorker.start('https://localhost:9876/worker.bundle.js', dir);
+        const adapter = await FsaNodeSyncAdapterWorker.start(__HOST__ + '/worker.bundle.js', dir);
         fsRef.current = new FsaNodeFs(dir, adapter);
         initGitTranslations();
     }
@@ -42,7 +42,7 @@ const TranslateScreen = () => {
                 fs,
                 http,
                 dir: '',
-                url: 'https://tools.jarosius.lt/lettell/demo.git',
+                url: __HOST__ + 'github/lettell/demo.git',
                 ref: 'main',
                 singleBranch: true,
                 depth: 10
