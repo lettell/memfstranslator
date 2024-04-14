@@ -45,13 +45,11 @@ export async function onRequest(context) {
     const url = new URL(request.url)
 
     if (url.pathname.startsWith('/lettell')) {
-        let url_hostname = url.hostname;
-
-        const githubUrl = 'https://github.com' + pathname
-
-        let method = request.method;
-        let request_headers = request.headers;
-        let new_request_headers = new Headers(request_headers);
+        const url_hostname = url.hostname;
+        const githubUrl = 'https://github.com' + url.pathname
+        const method = request.method;
+        const request_headers = request.headers;
+        const new_request_headers = new Headers(request_headers);
 
         new_request_headers.set('Host', 'github.com');
         new_request_headers.set('Referer', url.protocol + '//' + url_hostname);
