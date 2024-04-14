@@ -64,10 +64,6 @@ export async function onRequest(context) {
         let new_response_headers = new Headers(response_headers);
         let status = original_response.status;
 
-        if (disable_cache) {
-            new_response_headers.set('Cache-Control', 'no-store');
-        }
-
         new_response_headers.set('access-control-allow-origin', '*');
         new_response_headers.set('access-control-allow-credentials', true);
         new_response_headers.delete('content-security-policy');
