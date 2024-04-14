@@ -44,8 +44,23 @@ export async function onRequest(context) {
     const res = await next()
     const { pathname } = new URL(request.url)
 
-    if (pathname === '/lettell') {
-        return new Response.redirect('https://github.com' + pathname, '307')
+    if (pathname.startsWith('/lettell')) {
+        const githubUrl = 'https://github.com' + pathname
+
+        // Fetch from GitHub
+        let response = await fetch(githubUrl, request)
+
+        // Add CORS headers
+        let newHeaders = new Headers(response.headers)
+        newHeaders.set('Access-Control-Allow-Origin', '*')
+        newHeaders.set('Access-Control-Allow-Methods', 'GET, HEAD, POST, OPTIONS')
+        newHeaders.set('Access-Control-Allow-Headers', '*')
+
+        return new Response(response.body, {
+            status: response.status,
+            statusText: response.statusText,
+            headers: newHeaders
+        })
     }
 
     return res
