@@ -1,4 +1,5 @@
 const originalAPIHostname = "github.com";
+const originalAPISecondHostname = "gitlab.com";
 
 export async function onRequest(context) {
   const {
@@ -38,7 +39,7 @@ export async function onRequest(context) {
     }
   } else if (url.pathname.startsWith('/gitlab')) {
     const url = new URL(request.url);
-    url.hostname = originalAPIHostname;
+    url.hostname = originalAPISecondHostname;
 
     const newRequest = new Request(url.toString().replace('/gitlab', ''), request);
     try {
