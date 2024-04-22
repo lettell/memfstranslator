@@ -20,7 +20,7 @@ export async function onRequest(context) {
     // Best practice is to always use the original request to construct the new request
     // to clone all the attributes. Applying the URL also requires a constructor
     // since once a Request has been constructed, its URL is immutable.
-    const newRequest = new Request(url.toString().replace('/github', ''), request);
+    const newRequest = new Request(url.toString().replace('com/github', 'com'), request);
     try {
       const response = await fetch(newRequest);
 
@@ -39,7 +39,7 @@ export async function onRequest(context) {
   } else if (url.pathname.startsWith('/gitlab')) {
     url.hostname = originalAPISecondHostname;
 
-    const newRequest = new Request(url.toString().replace('/gitlab', ''), request);
+    const newRequest = new Request(url.toString().replace('com/gitlab', 'com'), request);
     try {
       const response = await fetch(newRequest);
 
