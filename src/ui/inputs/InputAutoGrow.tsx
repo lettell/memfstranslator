@@ -1,7 +1,7 @@
 import { StyleSheet, TextInput, Text, LayoutChangeEvent, View } from 'react-native';
 import React, { useEffect, useState, useTransition } from 'react';
 
-const InputAutoGrow = ({ text, setText }: { text: any, setText?: (text: string) => void }) => {
+const InputAutoGrow = ({ text, setText, disabled }: { disabled?: boolean, text: any, setText?: (text: string) => void }) => {
     const inputRef = React.useRef<TextInput>(null);
     const [inputHeight, setInputHeight] = useState(0);
     const [inputWidth, setInputWidth] = useState(0);
@@ -26,7 +26,7 @@ const InputAutoGrow = ({ text, setText }: { text: any, setText?: (text: string) 
 
     };
     return <label className="input-sizer stacked" data-value={text} >
-        <textarea rows={1} onChange={(event) => {
+        <textarea disabled={disabled} rows={1} onChange={(event) => {
             const a: any = event.target.parentNode
             a.dataset.value = event.target.value
             handleTextChange(event.target.value)

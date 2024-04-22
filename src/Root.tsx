@@ -33,7 +33,7 @@ const Root = () => {
                     </RootStack.Group>
                 </RootStack.Navigator>
             </NavigationContainer>
-            <Text>{isAuth ? 'yes' : 'nope'}</Text>
+            {/* <Text>{isAuth ? 'yes' : 'nope'}</Text> */}
         </FluentProvider>
 
     )

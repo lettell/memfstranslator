@@ -143,14 +143,20 @@ module.exports = {
       pathRewrite: { '^/github': '' },
       changeOrigin: true,
       secure: true,
+    }, {
+      context: ['/gitlab'],
+      target: 'https://gitlab.com',
+      pathRewrite: { '^/gitlab': '' },
+      changeOrigin: true,
+      secure: true,
     }],
     headers: {
       // "Access-Control-Allow-Origin": "*",
       // "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
       // "Access-Control-Allow-Headers": "X-Requested-With, content-type, Authorization",  
-      // These two headers are required for SharedArrayBuffer to work.
-      // 'Cross-Origin-Opener-Policy': 'same-origin',
-      // 'Cross-Origin-Embedder-Policy': 'require-corp',
+
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'require-corp',
     },
     port: 9876,
     hot: false,

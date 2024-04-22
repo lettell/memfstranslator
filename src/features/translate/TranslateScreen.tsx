@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import git from 'isomorphic-git';
 
 
@@ -13,14 +13,27 @@ import BaseTable from 'base/BaseTable';
 import TestingToolbar from 'tools/TestingToolbar';
 import useLunar from 'hooks/useLunar';
 import TranslateSearchBar from './components/TranslateSearchBar';
+import { useRecoilValue } from 'recoil';
+import { searchResultsState } from './states/searchState';
+import { deepEqual } from 'utils/object';
+import { Dropdown, Option, Toolbar, ToolbarButton, useId } from '@fluentui/react-components';
 
+const SETTINGS = {
+    defaultLocale: 'en',
+    gitUrl: '/gitlab/paulius2072503/app-translations.git',
+    gitWorkingBranch: 'main'
+}
 
 const TranslateScreen = () => {
     const { t } = useTranslation();
-    const [defaultFolder, _] = useState<string>('lt')
+    const [defaultFolder, _] = useState<string>(SETTINGS.defaultLocale)
     const [files, setFiles] = useState<any>([]);
+    const selectedLocaleId = useId('locales')
+    const [selectedLocales, setSelectedLocales] = useState<string[] | undefined>([] as any)
     const [roots, setRoots] = useState<any>([])
     const [data, setData] = useState<any>({});
+    const [originalData, setOriginalData] = useState<any>({});
+
     const idx = useLunar(data, roots)
     const [_orignalDefault, setOrignalDefault] = useState<any>({});
     const filteredRoots = useMemo(() => roots.filter((e: any) => e !== defaultFolder), [roots])
@@ -37,17 +50,35 @@ const TranslateScreen = () => {
     }, [])
     // method to pull translations from git git@github.com:lettell/demo.git
     // TODO: env by build versions
+    // TODO: fix
     const pullTranslations = async () => {
         // const dir = await (window as any).showDirectoryPicker({ id: 'demo', mode: 'readwrite' });
         // const adapter = await FsaNodeSyncAdapterWorker.start('https://localhost:9876/worker.bundle.js', dir);
+
+        // 
         try {
             await git.clone({
                 fs,
                 http,
                 dir: '',
-                url: __HOST__ + '/github/lettell/demo.git',
-                ref: 'main',
+                url: __HOST__ + SETTINGS.gitUrl,
+                ref: SETTINGS.gitWorkingBranch,
                 singleBranch: true,
+                onAuth: url => {
+                    // let auth = lookupSavedPassword(url)
+                    // if (auth) return auth
+                    let auth = {}
+
+                    if (confirm('This repo is password protected. Ready to enter a username & password?')) {
+                        auth = {
+                            username: prompt('Enter username'),
+                            password: prompt('Enter password'),
+                        }
+                        return auth
+                    } else {
+                        return { cancel: true }
+                    }
+                },
                 depth: 10
             });
 
@@ -56,7 +87,14 @@ const TranslateScreen = () => {
         } finally {
             initGitTranslations();
             const languages = fs.readdirSync('', { withFileTypes: true }) as Array<any>;
-            setRoots(languages?.filter((e: any) => !e.name.startsWith('.') && e.isDirectory()).map(e => e.name) as Array<any>)
+            const avialavleLocales = languages?.filter((e: any) => !e.name.startsWith('.') && e.isDirectory()).map(e => e.name) as Array<any>
+            setRoots(avialavleLocales.sort((text1, text2) => {
+                if (text1 === SETTINGS.defaultLocale) {
+                    return -1
+                } else {
+                    return 0
+                }
+            }))
         }
     }
     useEffect(() => {
@@ -124,14 +162,15 @@ const TranslateScreen = () => {
                 }
             }
         }
-        setData(dataParsed);
+        setData(new Object(dataParsed));
+        setOriginalData(JSON.parse(JSON.stringify(dataParsed)))
         setFiles(Object.keys(dataParsed));
         setOrignalDefault(orignalDefaultParsed);
     }
-    const handleInputChange = (file: any, locale: any, key: any, translatedValue: any) => {
-        data[file][locale][key] = translatedValue;
-        setData({ ...data });
-    }
+    // const handleInputChange = (file: any, locale: any, key: any, translatedValue: any) => {
+    //     data[file][locale][key] = translatedValue;
+    //     setData({ ...data });
+    // }
     const handleSave = async () => {
         for (const file in data) {
             for (const locale in data[file]) {
@@ -169,28 +208,64 @@ const TranslateScreen = () => {
             ref: 'main',
             onAuth: () => ({ username: process.env.GITHUB_TOKEN }),
         })
-        console.log(pushResult, sha)
     }
-
-    const onValueCuange = (key: any, locale: any, value: any, file: any) => {
+    const [isMatch, setIsMatch] = useState(true)
+    const onValueChange = (key: any, locale: any, value: any, file: any) => {
         data[file][locale][key] = value;
-        setData({ ...data });
+        const newData = { ...data }
+        setData(newData);
+        checkIfMatch(newData)
     }
+    const checkIfMatch = useCallback((newData: any) => {
+        const isMatchNow = deepEqual(newData, originalData)
+        if (isMatchNow !== isMatch) {
+            console.warn('SETTING new for save')
+            setIsMatch(isMatchNow)
+        }
+    }, [originalData, isMatch])
+    const handleLocalesChange = (_e: any, data: any) => {
+        console.log(data);
+        setSelectedLocales(data.selectedOptions)
+    }
+    const fillteredRoots = useMemo(() => {
+        return selectedLocales?.length ? roots.filter((e: string) => selectedLocales.includes(e) || e === SETTINGS.defaultLocale) : roots
+    }, [roots, selectedLocales])
     return (
         // <SafeAreaView>
         // <StatusBar />
         <>
-            <TranslateSearchBar idx={idx} />
+            <Toolbar>
+
+                <View style={{ flexDirection: 'row' }}>
+                    <TranslateSearchBar idx={idx} />
+                    <Dropdown
+                        aria-labelledby={selectedLocaleId}
+                        multiselect={true}
+                        selectedOptions={selectedLocales}
+                        onOptionSelect={handleLocalesChange}
+                        placeholder="Select an locales"
+                    >
+                        {roots.map((option: string) => (
+                            <Option key={option} disabled={option === SETTINGS.defaultLocale}>
+                                {option}
+                            </Option>
+                        ))}
+                    </Dropdown>
+                    {!isMatch && <ToolbarButton style={{ flex: 1, backgroundColor: 'green' }} onClick={handleSave}>
+                        <Text style={{ fontSize: 24, color: 'red', alignItems: 'center' }}>SAVE TRNASLATIONS</Text>
+                    </ToolbarButton>}
+
+                </View>
+            </Toolbar>
+
             <GitBasedTabs tabs={files} />
-            <TestingToolbar />
-            <Text testID="App name text button" accessibilityLabel="App name label" >{t('common.demo')}</Text>
+            {/* <TestingToolbar /> */}
+            {/* <Text testID="App name text button" accessibilityLabel="App name label" >{t('common.demo')}</Text> */}
             {/* <Pressable onPress={initFsa}>
                 This for local editing
                 <Text style={{ fontSize: 24 }}>LOAD TRANSLATIONS</Text>
             </Pressable> */}
-            <Pressable onPress={handleSave}>
-                <Text style={{ fontSize: 24 }}>SAVE TRNASLATIONS</Text>
-            </Pressable>
+
             {/* <th><Text>{Object.entries(_orignalDefault).map(e => JSON.stringify(e))}</th> */}
             {/* {Object.keys(data).map(e => <th>{e}</th>)} */}
 
@@ -204,8 +279,8 @@ const TranslateScreen = () => {
                 // TODO: move to separate component
                 // [key, object, object]
                 Object.keys(data).map(key => {
-                    return <BaseTable currentContext={key} onValueChange={(...arg) => onValueCuange(...arg, key)} columns={[{ columnKey: 'key', label: 'KEY', columnType: 'System' }, ...roots.map((root: string) => ({ columnKey: root, label: root, columnType: 'AdvanedField' }))]} items={Object.entries(data[key][defaultFolder]).map((e: any, i: any) => {
-                        return [e[0], ...roots.map((root: string) => ({ [root]: data[key][root][e[0]] }))]
+                    return <BaseTable defaultLocale={SETTINGS.defaultLocale} key={key + 'table'} currentContext={key} onValueChange={(...arg) => onValueChange(...arg, key)} columns={[{ columnKey: 'key', label: 'CONTEXT !!!', columnType: 'System' }, ...fillteredRoots.map((root: string) => ({ columnKey: root, label: root, columnType: 'AdvanedField' }))]} items={Object.entries(data[key][defaultFolder]).map((e: any, i: any) => {
+                        return [e[0], ...fillteredRoots.map((root: string) => ({ [root]: data[key][root][e[0]] }))]
                     })} loader={false} />
                 })
 
@@ -254,6 +329,8 @@ const TranslateScreen = () => {
                 //   </View>
                 // })
             }
+            {/* TODO: context toolbar */}
+
         </>
         // </SafeAreaView>
 
